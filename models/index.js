@@ -9,7 +9,7 @@ const Page = db.define('page', {
 
     slug: {
         type: Sequelize.STRING,
-        allowNull: false 
+        allowNull: false
     },
     content: {
         type: Sequelize.TEXT,
@@ -22,6 +22,16 @@ const Page = db.define('page', {
     }
 })
 
+function generateSlug (title) {
+    // Removes all non-alphanumeric characters from title
+    // And make whitespace underscore
+    return title.replace(/\s+/g, '_').replace(/\W/g, '');
+}
+
+Page.beforeValidate((PageInstance, optionsObject) => {
+    PageInstance.slug = generateSlug(PageInstance.title);
+})
+
 const User = db.define('user', {
     name: {
         type: Sequelize.STRING,
@@ -31,7 +41,10 @@ const User = db.define('user', {
     email: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
+        validate: {
+            isEmail: true
+        }
     }
 })
 
